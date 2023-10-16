@@ -25,6 +25,11 @@ export default async function sendMessage(sock, payload) {
         const { video } = payload;
         await sendVideo(sock, jid, message, video);
     }
+    if (type === 'list') {
+        const { sections, footer, buttonText, title } = payload;
+        await sendList(sock, jid, message, sections, footer, buttonText, title);
+    }
+
 }
 
 async function sendText(sock, jid, message) {
@@ -32,8 +37,8 @@ async function sendText(sock, jid, message) {
 }
 
 async function sendVideo(sock, jid, message, video) {
-    const videoMessage = { 
-        video: { url: video }, 
+    const videoMessage = {
+        video: { url: video },
         caption: message,
     }
 
@@ -41,8 +46,8 @@ async function sendVideo(sock, jid, message, video) {
 }
 
 async function sendImage(sock, jid, message, image) {
-    const imageMessage = { 
-        image: { url: image }, 
+    const imageMessage = {
+        image: { url: image },
         caption: message,
     }
 
@@ -57,6 +62,18 @@ async function sendButton(sock, jid, message, buttons, footer) {
         headerType: 1,
     }
     await sock.sendMessage(jid, buttonMessage);
+}
+
+async function sendList(sock, jid, message, sections, footer, buttonText, title) {
+    const listMessage = {
+        text: message,
+        footer,
+        title,
+        buttonText,
+        sections
+    }
+
+    await sock.sendMessage(jid, listMessage);
 }
 
 function parsePhoneNumberToWhatsappFormat(phone) {
