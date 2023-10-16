@@ -1,5 +1,6 @@
 import express from 'express';
 import connect from './connect.js';
+import sendMessage from './send-message.js';
 
 const app = express();
 app.use (express.json());
@@ -13,14 +14,17 @@ const receivedEvents = (sock) => {
     });
 }
 
-const sendTextMessage = async (body) => {
-    const { number, message } = body;
-    const socketConn = await connect();
-    await socketConn.sendMessage(number, { text: message });
-}
 
 app.post('/send-message', async (req, res) => {
-    await sendTextMessage(req.body);
+    const payload = req.body;
+
+    try {
+        await sendMessage(sock, payload);
+        return res.status(200).json({message: 'Message sent!'});
+    } catch (error) {
+        console.log('error', error);
+        return res.status(500).json({message: 'Error sending message!'});
+    }
 });
 
 app.get('/', (req, res) => {
