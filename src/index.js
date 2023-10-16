@@ -1,18 +1,14 @@
 import express from 'express';
 import connect from './connect.js';
 import routes from './routes.js';
+import ReceivedEvents from './usecases/receivedEvents.js';
 
 const app = express();
 app.use (express.json());
 
 const sock = await connect();
 
-const receivedEvents = (sock) => {
-    sock.ev.on('messages.upsert', async  ({ messages }) => {
-        const m = messages[0]
-        console.log('received message', m)
-    });
-}
+new ReceivedEvents(sock).on();
 
 app.use(routes);
 
@@ -22,4 +18,4 @@ app.listen(PORT, () => {
     }
 );
 
-export default sock
+export default sock;
