@@ -1,11 +1,13 @@
 import sock from '../index.js';
-import sendMessage from '../send-message.js';
+import SendMessageUsecase from '../usecases/sendMessageUsecase.js';
 
 export default class SendMessageController {
     async handle(request, response) {
         try {
             const payload = request.body;
-            await sendMessage(sock, payload);
+            
+            const sendMessageUsecase = new SendMessageUsecase(sock);
+            await sendMessageUsecase.execute(payload);
 
             return response.status(200).json({message: 'Message sent!'});
         } catch (error) {

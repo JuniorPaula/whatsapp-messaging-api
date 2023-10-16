@@ -1,6 +1,5 @@
 import express from 'express';
 import connect from './connect.js';
-import sendMessage from './send-message.js';
 import routes from './routes.js';
 
 const app = express();
