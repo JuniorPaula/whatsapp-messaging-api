@@ -21,10 +21,23 @@ export default async function sendMessage(sock, payload) {
         const { image } = payload;
         await sendImage(sock, jid, message, image);
     }
+    if (type === 'video') {
+        const { video } = payload;
+        await sendVideo(sock, jid, message, video);
+    }
 }
 
 async function sendText(sock, jid, message) {
     return sock.sendMessage(jid, { text: message });
+}
+
+async function sendVideo(sock, jid, message, video) {
+    const videoMessage = { 
+        video: { url: video }, 
+        caption: message,
+    }
+
+    await sock.sendMessage(jid, videoMessage);
 }
 
 async function sendImage(sock, jid, message, image) {
