@@ -1,8 +1,16 @@
 export default class SendMessageUsecase {
     #sock;
+    #messageTypes;
 
     constructor(sock) {
         this.#sock = sock;
+        this.#messageTypes = {
+            text: this.#sendText,
+            button: this.#sendButton,
+            image: this.#sendImage,
+            video: this.#sendVideo,
+            list: this.#sendList,
+        };
     }
 
     async execute(payload) {
@@ -13,53 +21,42 @@ export default class SendMessageUsecase {
         const haveWhatsapp = await this.#sock.onWhatsApp(jid);
 
         if (!jid.includes('@g.us') && (!haveWhatsapp || !haveWhatsapp.length || !haveWhatsapp[0].exists)) {
-            throw new Error('Phone number does not have whatsapp!');
+            throw new Error('Phone number does not have WhatsApp!');
         }
 
-        if (type === 'text') {
-            await this.#sendText(jid, message);
+        const messageTypeFunction = this.#messageTypes[type];
+
+        if (!messageTypeFunction) {
+            throw new Error('Invalid message type');
         }
-        if (type === 'button') {
-            const { buttons, footer } = payload;
-            await this.#sendButton(jid, message, buttons, footer);
-        }
-        if (type === 'image') {
-            const { image } = payload;
-            await this.#sendImage(jid, message, image);
-        }
-        if (type === 'video') {
-            const { video } = payload;
-            await this.#sendVideo(jid, message, video);
-        }
-        if (type === 'list') {
-            const { sections, footer, buttonText, title } = payload;
-            await this.#sendList(jid, message, sections, footer, buttonText, title);
-        }
+
+        await messageTypeFunction.call(this, jid, message, payload);
     }
 
     async #sendText(jid, message) {
         return this.#sock.sendMessage(jid, { text: message });
     }
     
-    async #sendVideo(jid, message, video) {
+    async #sendVideo(jid, message, payload) {
         const videoMessage = {
-            video: { url: video },
+            video: { url: payload.video },
             caption: message,
         }
     
         await this.#sock.sendMessage(jid, videoMessage);
     }
     
-    async #sendImage(jid, message, image) {
+    async #sendImage(jid, message, payload) {
         const imageMessage = {
-            image: { url: image },
+            image: { url: payload.image },
             caption: message,
         }
     
         await this.#sock.sendMessage(jid, imageMessage);
     }
     
-    async #sendButton(jid, message, buttons, footer) {
+    async #sendButton(jid, message, payload) {
+        const { buttons, footer } = payload;
         const buttonMessage = {
             text: message,
             footer,
@@ -69,7 +66,8 @@ export default class SendMessageUsecase {
         await this.#sock.sendMessage(jid, buttonMessage);
     }
     
-    async #sendList(jid, message, sections, footer, buttonText, title) {
+    async #sendList(jid, message, payload) {
+        const { sections, footer, buttonText, title } = payload;
         const listMessage = {
             text: message,
             footer,
