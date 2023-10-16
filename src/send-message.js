@@ -13,10 +13,24 @@ export default async function sendMessage(sock, payload) {
     if (type === 'text') {
         await sendText(sock, jid, message);
     }
+    if (type === 'button') {
+        const { buttons, footer } = payload;
+        await sendButton(sock, jid, message, buttons, footer);
+    }
 }
 
 async function sendText(sock, jid, message) {
     return sock.sendMessage(jid, { text: message });
+}
+
+async function sendButton(sock, jid, message, buttons, footer) {
+    const buttonMessage = {
+        text: message,
+        footer,
+        buttons,
+        headerType: 1,
+    }
+    await sock.sendMessage(jid, buttonMessage);
 }
 
 function parsePhoneNumberToWhatsappFormat(phone) {
