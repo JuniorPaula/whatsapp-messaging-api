@@ -17,10 +17,23 @@ export default async function sendMessage(sock, payload) {
         const { buttons, footer } = payload;
         await sendButton(sock, jid, message, buttons, footer);
     }
+    if (type === 'image') {
+        const { image } = payload;
+        await sendImage(sock, jid, message, image);
+    }
 }
 
 async function sendText(sock, jid, message) {
     return sock.sendMessage(jid, { text: message });
+}
+
+async function sendImage(sock, jid, message, image) {
+    const imageMessage = { 
+        image: { url: image }, 
+        caption: message,
+    }
+
+    await sock.sendMessage(jid, imageMessage);
 }
 
 async function sendButton(sock, jid, message, buttons, footer) {
