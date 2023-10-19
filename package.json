@@ -1,7 +1,7 @@
 {
   "name": "baileys-whatsapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "API para o whatsapp",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -13,7 +13,11 @@
   "license": "ISC",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.4.1",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.51.0"
   }
 }
