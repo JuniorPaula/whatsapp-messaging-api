@@ -1,4 +1,4 @@
-import sock from '../index.js';
+import receivedMidiaMessage from '../utils/received-midia-message.js';
 
 export default class ReceivedEvents {
     #sock;
@@ -13,7 +13,8 @@ export default class ReceivedEvents {
             /**
              * Implements logic to handle received messages events
              */
-            console.log('received message', m)
+            
+            await receivedMidiaMessage(m);
         });
     }
 }
